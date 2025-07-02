@@ -1,19 +1,28 @@
+/**
+ * Gemini Prompt Snippets - ポップアップスタイル
+ * 拡張機能のポップアップウィンドウのスタイル定義
+ */
+
+/* ベーススタイル */
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  width: 300px;
-  background-color: #f8f9fa;
-  color: #202124;
+  width: 300px; /* ポップアップの幅を固定 */
+  background-color: #f8f9fa; /* Googleのライトグレー背景 */
+  color: #202124; /* ダークグレーのテキスト */
 }
 
+/* メインコンテナ */
 .container {
   padding: 10px;
 }
 
+/* 見出しスタイル */
 h2, h3 {
-  color: #1a73e8;
+  color: #1a73e8; /* Googleブルー */
   margin-top: 0;
 }
 
+/* 区切り線 */
 hr {
     border: 0;
     height: 1px;
@@ -21,11 +30,13 @@ hr {
     margin: 15px 0;
 }
 
+/* スニペットリストコンテナ */
 #snippets-list {
-  max-height: 200px;
+  max-height: 200px; /* 最大高さを制限してスクロール可能に */
   overflow-y: auto;
 }
 
+/* 個別のスニペットアイテム */
 .snippet-item {
   display: flex;
   justify-content: space-between;
@@ -38,25 +49,28 @@ hr {
   font-size: 13px;
 }
 
+/* スニペットテキスト */
 .snippet-text {
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: ellipsis; /* 長いテキストは省略記号で表示 */
   margin-right: 10px;
 }
 
+/* テキストエリア（プロンプト入力用） */
 textarea {
-  width: calc(100% - 16px);
+  width: calc(100% - 16px); /* パディングを考慮した幅 */
   padding: 8px;
   border: 1px solid #dadce0;
   border-radius: 4px;
-  resize: vertical;
+  resize: vertical; /* 縦方向のみリサイズ可能 */
   margin-bottom: 10px;
   font-size: 13px;
 }
 
+/* タイトル入力フィールド */
 .title-input {
-  width: calc(100% - 16px);
+  width: calc(100% - 16px); /* パディングを考慮した幅 */
   padding: 8px;
   border: 1px solid #dadce0;
   border-radius: 4px;
@@ -64,6 +78,7 @@ textarea {
   font-size: 13px;
 }
 
+/* ボタンの基本スタイル */
 .button {
   padding: 8px 16px;
   border: none;
@@ -73,33 +88,38 @@ textarea {
   font-size: 14px;
 }
 
+/* プライマリボタン（追加ボタン） */
 .button.primary {
-  background-color: #1a73e8;
+  background-color: #1a73e8; /* Googleブルー */
   color: white;
   width: 100%;
 }
+
+/* プライマリボタンのホバー効果 */
 .button.primary:hover {
-  background-color: #2b7de9;
+  background-color: #2b7de9; /* より明るいブルー */
 }
 
-
+/* 削除ボタン */
 .delete-btn {
-  background-color: #e6e6e6;
+  background-color: #e6e6e6; /* 通常時はグレー */
   color: #808080;
   border: none;
-  border-radius: 50%;
+  border-radius: 50%; /* 円形ボタン */
   cursor: pointer;
   width: 24px;
   height: 24px;
   font-weight: bold;
-  flex-shrink: 0;
+  flex-shrink: 0; /* 縮小を防ぐ */
 }
 
+/* 削除ボタンのホバー効果 */
 .delete-btn:hover {
-  background-color: #d63c2c;
+  background-color: #d63c2c; /* ホバー時は赤色 */
   color: white;
 }
 
+/* ローディング/空状態のメッセージ */
 .loading {
-    color: #808080;
+    color: #808080; /* グレーのテキスト */
 }

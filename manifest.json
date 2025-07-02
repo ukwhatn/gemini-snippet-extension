@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Gemini Prompt Snippets",
   "version": "1.0",
-  "description": "Add and insert prompt snippets on the Gemini website.",
+  "description": "Geminiウェブサイトでプロンプトスニペットを追加・挿入できます。",
   "permissions": [
     "storage"
   ],

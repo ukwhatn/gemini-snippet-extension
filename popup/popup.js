@@ -1,105 +1,273 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const snippetsList = document.getElementById('snippets-list');
-  const addSnippetBtn = document.getElementById('add-snippet-btn');
-  const newSnippetText = document.getElementById('new-snippet-text');
-  const newSnippetTitle = document.getElementById('new-snippet-title');
+/**
+ * Gemini Prompt Snippets - ポップアップスクリプト
+ * スニペットの管理画面を提供（追加・削除・表示）
+ */
 
-  // データ移行関数：旧形式のスニペット（文字列）を新形式（オブジェクト）に変換
-  function migrateSnippets(snippets) {
-    return snippets.map(snippet => {
-      if (typeof snippet === 'string') {
-        // 旧形式の場合、最初の行をタイトルとして使用
-        const lines = snippet.split('\n');
-        return {
-          title: lines[0] || 'Untitled',
-          text: snippet
-        };
-      }
-      return snippet;
-    });
-  }
-
-  function renderSnippets(snippets) {
-    snippetsList.innerHTML = '';
-    if (snippets.length === 0) {
-        // スニペットがない場合のメッセージを更新
-        snippetsList.innerHTML = '<p class="loading">スニペットはまだありません。</p>';
-        return;
+// 定数定義
+const CONSTANTS = {
+    STORAGE_KEY: 'snippets',
+    ELEMENTS: {
+        SNIPPETS_LIST: 'snippets-list',
+        ADD_BUTTON: 'add-snippet-btn',
+        TEXT_INPUT: 'new-snippet-text',
+        TITLE_INPUT: 'new-snippet-title'
+    },
+    CLASSES: {
+        SNIPPET_ITEM: 'snippet-item',
+        SNIPPET_TEXT: 'snippet-text',
+        DELETE_BUTTON: 'delete-btn',
+        LOADING: 'loading'
+    },
+    MESSAGES: {
+        NO_SNIPPETS: 'スニペットはまだありません。',
+        UNTITLED: '無題',
+        DELETE_CONFIRM: '削除してもよろしいですか？'
     }
-    snippets.forEach((snippet, index) => {
-      const snippetItem = document.createElement('div');
-      snippetItem.className = 'snippet-item';
+};
 
-      const snippetText = document.createElement('span');
-      snippetText.className = 'snippet-text';
-      snippetText.textContent = snippet.title || snippet.text.split('\n')[0]; // タイトルを表示
-      snippetText.title = snippet.text;
+/**
+ * ポップアップ管理クラス
+ */
+class PopupManager {
+    constructor() {
+        this.elements = {};
+        this.init();
+    }
 
-      const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'delete-btn';
-      deleteBtn.textContent = '×';
-      deleteBtn.addEventListener('click', () => {
-        deleteSnippet(index);
-      });
-
-      snippetItem.appendChild(snippetText);
-      snippetItem.appendChild(deleteBtn);
-      snippetsList.appendChild(snippetItem);
-    });
-  }
-
-  function getSnippets() {
-    // 初期スニペットを追加するロジックを削除し、ストレージから直接読み込むだけにしました。
-    chrome.storage.sync.get({ snippets: [] }, (data) => {
-        const migratedSnippets = migrateSnippets(data.snippets);
-        // 移行が必要な場合は保存
-        if (data.snippets.some(s => typeof s === 'string')) {
-          chrome.storage.sync.set({ snippets: migratedSnippets });
-        }
-        renderSnippets(migratedSnippets);
-    });
-  }
-
-  function addSnippet() {
-    const text = newSnippetText.value.trim();
-    const title = newSnippetTitle.value.trim();
-    if (text) {
-      chrome.storage.sync.get({ snippets: [] }, (data) => {
-        const migratedSnippets = migrateSnippets(data.snippets);
-        const newSnippet = {
-          title: title || text.split('\n')[0] || 'Untitled',
-          text: text
-        };
-        const newSnippets = [...migratedSnippets, newSnippet];
-        chrome.storage.sync.set({ snippets: newSnippets }, () => {
-          renderSnippets(newSnippets);
-          newSnippetText.value = '';
-          newSnippetTitle.value = '';
+    /**
+     * 初期化処理
+     */
+    init() {
+        document.addEventListener('DOMContentLoaded', () => {
+            this.cacheElements();
+            this.setupEventListeners();
+            this.loadSnippets();
         });
-      });
     }
-  }
 
-  function deleteSnippet(index) {
-    chrome.storage.sync.get({ snippets: [] }, (data) => {
-      const migratedSnippets = migrateSnippets(data.snippets);
-      const newSnippets = migratedSnippets.filter((_, i) => i !== index);
-      chrome.storage.sync.set({ snippets: newSnippets }, () => {
-        renderSnippets(newSnippets);
-      });
-    });
-  }
+    /**
+     * DOM要素をキャッシュ
+     */
+    cacheElements() {
+        this.elements = {
+            snippetsList: document.getElementById(CONSTANTS.ELEMENTS.SNIPPETS_LIST),
+            addButton: document.getElementById(CONSTANTS.ELEMENTS.ADD_BUTTON),
+            textInput: document.getElementById(CONSTANTS.ELEMENTS.TEXT_INPUT),
+            titleInput: document.getElementById(CONSTANTS.ELEMENTS.TITLE_INPUT)
+        };
 
-  addSnippetBtn.addEventListener('click', addSnippet);
-  
-  // Listen for storage changes from other parts of the extension
-  chrome.storage.onChanged.addListener((changes, namespace) => {
-      if (namespace === 'sync' && changes.snippets) {
-          const migratedSnippets = migrateSnippets(changes.snippets.newValue);
-          renderSnippets(migratedSnippets);
-      }
-  });
+        // 必須要素の存在確認
+        Object.entries(this.elements).forEach(([key, element]) => {
+            if (!element) {
+                console.error(`必須要素が見つかりません: ${key}`);
+            }
+        });
+    }
 
-  // Initial load
-  getSnippets();
-});
+    /**
+     * イベントリスナーの設定
+     */
+    setupEventListeners() {
+        // 追加ボタンのクリックイベント
+        this.elements.addButton?.addEventListener('click', () => this.addSnippet());
+        
+        // Enterキーでの追加対応
+        this.elements.textInput?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                this.addSnippet();
+            }
+        });
+
+        // ストレージの変更を監視
+        chrome.storage.onChanged.addListener((changes, namespace) => {
+            if (namespace === 'sync' && changes[CONSTANTS.STORAGE_KEY]) {
+                this.renderSnippets(changes[CONSTANTS.STORAGE_KEY].newValue || []);
+            }
+        });
+    }
+
+    /**
+     * スニペットを読み込んで表示
+     */
+    loadSnippets() {
+        chrome.storage.sync.get({ [CONSTANTS.STORAGE_KEY]: [] }, (data) => {
+            if (chrome.runtime.lastError) {
+                console.error('ストレージ読み込みエラー:', chrome.runtime.lastError);
+                this.showError('スニペットの読み込みに失敗しました');
+                return;
+            }
+            
+            this.renderSnippets(data[CONSTANTS.STORAGE_KEY]);
+        });
+    }
+
+    /**
+     * スニペット一覧を描画
+     * @param {Array} snippets - スニペットの配列
+     */
+    renderSnippets(snippets) {
+        if (!this.elements.snippetsList) return;
+
+        this.elements.snippetsList.innerHTML = '';
+
+        if (snippets.length === 0) {
+            this.showEmptyMessage();
+            return;
+        }
+
+        snippets.forEach((snippet, index) => {
+            this.createSnippetItem(snippet, index);
+        });
+    }
+
+    /**
+     * 空の状態のメッセージを表示
+     */
+    showEmptyMessage() {
+        const message = document.createElement('p');
+        message.className = CONSTANTS.CLASSES.LOADING;
+        message.textContent = CONSTANTS.MESSAGES.NO_SNIPPETS;
+        this.elements.snippetsList.appendChild(message);
+    }
+
+    /**
+     * スニペットアイテムを作成
+     * @param {Object} snippet - スニペットオブジェクト
+     * @param {number} index - インデックス
+     */
+    createSnippetItem(snippet, index) {
+        const item = document.createElement('div');
+        item.className = CONSTANTS.CLASSES.SNIPPET_ITEM;
+
+        // スニペットテキスト
+        const text = document.createElement('span');
+        text.className = CONSTANTS.CLASSES.SNIPPET_TEXT;
+        text.textContent = snippet.title || CONSTANTS.MESSAGES.UNTITLED;
+        text.title = snippet.text; // ツールチップ
+
+        // 削除ボタン
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = CONSTANTS.CLASSES.DELETE_BUTTON;
+        deleteBtn.textContent = '×';
+        deleteBtn.addEventListener('click', () => this.deleteSnippet(index));
+
+        item.appendChild(text);
+        item.appendChild(deleteBtn);
+        this.elements.snippetsList.appendChild(item);
+    }
+
+    /**
+     * 新しいスニペットを追加
+     */
+    addSnippet() {
+        const text = this.elements.textInput?.value.trim();
+        const title = this.elements.titleInput?.value.trim();
+
+        if (!text) {
+            this.showTemporaryMessage('テキストを入力してください');
+            return;
+        }
+
+        chrome.storage.sync.get({ [CONSTANTS.STORAGE_KEY]: [] }, (data) => {
+            if (chrome.runtime.lastError) {
+                console.error('ストレージ読み込みエラー:', chrome.runtime.lastError);
+                this.showError('スニペットの追加に失敗しました');
+                return;
+            }
+
+            const snippets = data[CONSTANTS.STORAGE_KEY];
+            const newSnippet = {
+                title: title || text.split('\n')[0] || CONSTANTS.MESSAGES.UNTITLED,
+                text: text
+            };
+
+            const updatedSnippets = [...snippets, newSnippet];
+
+            chrome.storage.sync.set({ [CONSTANTS.STORAGE_KEY]: updatedSnippets }, () => {
+                if (chrome.runtime.lastError) {
+                    console.error('ストレージ保存エラー:', chrome.runtime.lastError);
+                    this.showError('スニペットの保存に失敗しました');
+                    return;
+                }
+
+                // 入力フィールドをクリア
+                this.clearInputs();
+                this.renderSnippets(updatedSnippets);
+            });
+        });
+    }
+
+    /**
+     * スニペットを削除
+     * @param {number} index - 削除するスニペットのインデックス
+     */
+    deleteSnippet(index) {
+        chrome.storage.sync.get({ [CONSTANTS.STORAGE_KEY]: [] }, (data) => {
+            if (chrome.runtime.lastError) {
+                console.error('ストレージ読み込みエラー:', chrome.runtime.lastError);
+                this.showError('スニペットの削除に失敗しました');
+                return;
+            }
+
+            const snippets = data[CONSTANTS.STORAGE_KEY];
+            const updatedSnippets = snippets.filter((_, i) => i !== index);
+
+            chrome.storage.sync.set({ [CONSTANTS.STORAGE_KEY]: updatedSnippets }, () => {
+                if (chrome.runtime.lastError) {
+                    console.error('ストレージ保存エラー:', chrome.runtime.lastError);
+                    this.showError('スニペットの削除に失敗しました');
+                    return;
+                }
+
+                this.renderSnippets(updatedSnippets);
+            });
+        });
+    }
+
+    /**
+     * 入力フィールドをクリア
+     */
+    clearInputs() {
+        if (this.elements.textInput) this.elements.textInput.value = '';
+        if (this.elements.titleInput) this.elements.titleInput.value = '';
+        this.elements.titleInput?.focus();
+    }
+
+    /**
+     * エラーメッセージを表示
+     * @param {string} message - エラーメッセージ
+     */
+    showError(message) {
+        console.error(message);
+        this.showTemporaryMessage(message, 'error');
+    }
+
+    /**
+     * 一時的なメッセージを表示
+     * @param {string} message - メッセージ
+     * @param {string} type - メッセージタイプ
+     */
+    showTemporaryMessage(message, type = 'info') {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = message;
+        messageEl.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            background-color: ${type === 'error' ? '#f44336' : '#2196F3'};
+            color: white;
+            border-radius: 4px;
+            z-index: 1000;
+        `;
+        
+        document.body.appendChild(messageEl);
+        
+        setTimeout(() => {
+            messageEl.remove();
+        }, 3000);
+    }
+}
+
+// ポップアップマネージャーのインスタンスを作成
+const popupManager = new PopupManager();

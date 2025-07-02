@@ -1,3 +1,9 @@
+/**
+ * Gemini Prompt Snippets - コンテンツスタイル
+ * Geminiのチャット画面に挿入されるスニペットボタンのスタイル定義
+ */
+
+/* スニペットボタンコンテナ */
 #gemini-snippet-container {
     display: flex;
     flex-wrap: wrap;
@@ -5,30 +11,38 @@
     padding: 0.5rem 0;
 }
 
+/* モバイル対応 */
 @media (max-width: 600px) {
     #gemini-snippet-container {
-        margin-left: 0; /* No offset on smaller screens */
+        margin-left: 0; /* 小さな画面では左マージンを削除 */
     }
 }
 
+/* スニペットボタンのスタイル */
 .snippet-button {
-    background-color: #e8f0fe;
-    color: #1967d2;
+    /* 基本スタイル */
+    background-color: #e8f0fe; /* Googleのライトブルー */
+    color: #1967d2; /* Googleの濃いブルー */
     border: 1px solid #d2e3fc;
     border-radius: 0.5rem;
     padding: 0.5rem 1rem;
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
+    
+    /* トランジション効果 */
     transition: background-color 0.2s, box-shadow 0.2s;
+    
+    /* テキストの省略表示 */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 300px;
+    max-width: 300px; /* ボタンの最大幅を制限 */
 }
 
+/* ホバー時のスタイル */
 .snippet-button:hover {
     background-color: #d2e3fc;
     border-color: #a8c7fa;
-    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.1);
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.1); /* 軽い影を追加 */
 }
