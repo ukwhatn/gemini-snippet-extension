@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Prompt Snippets</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Prompt Snippets</h2>
+    <div id="snippets-list">
+      <p class="loading">Loading...</p>
+    </div>
+    <hr>
+    <h3>Add New Snippet</h3>
+    <input type="text" id="new-snippet-title" placeholder="スニペットのタイトルを入力..." class="title-input">
+    <textarea id="new-snippet-text" placeholder="Enter your prompt snippet..." rows="6"></textarea>
+    <button id="add-snippet-btn" class="button primary">Add Snippet</button>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
