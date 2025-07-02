@@ -183,6 +183,9 @@ class SnippetManager {
 
             // テキストエリアの高さを調整
             this.adjustTextareaHeight();
+            
+            // エディタを一番下までスクロール
+            this.scrollEditorToBottom(editor);
         } catch (error) {
             console.error('テキスト挿入エラー:', error);
         }
@@ -249,6 +252,27 @@ class SnippetManager {
         if (textareaWrapper && richTextarea) {
             // 高さの再計算をトリガー
             richTextarea.style.height = 'auto';
+        }
+    }
+
+    /**
+     * エディタを一番下までスクロール
+     * @param {HTMLElement} editor - エディタ要素
+     */
+    scrollEditorToBottom(editor) {
+        // エディタ自体をスクロール
+        editor.scrollTop = editor.scrollHeight;
+        
+        // 親要素もスクロールが必要な場合
+        const scrollableParent = editor.closest('.ql-container') || editor.parentElement;
+        if (scrollableParent) {
+            scrollableParent.scrollTop = scrollableParent.scrollHeight;
+        }
+        
+        // 最後の要素を表示領域に移動
+        const lastChild = editor.lastElementChild;
+        if (lastChild) {
+            lastChild.scrollIntoView({ behavior: 'smooth', block: 'end' });
         }
     }
 
