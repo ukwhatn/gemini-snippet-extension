@@ -16,12 +16,16 @@ const CONSTANTS = {
         SNIPPET_ITEM: 'snippet-item',
         SNIPPET_TEXT: 'snippet-text',
         DELETE_BUTTON: 'delete-btn',
+        EDIT_BUTTON: 'edit-btn',
         LOADING: 'loading'
     },
     MESSAGES: {
         NO_SNIPPETS: 'スニペットはまだありません。',
         UNTITLED: '無題',
-        DELETE_CONFIRM: '削除してもよろしいですか？'
+        DELETE_CONFIRM: '削除してもよろしいですか？',
+        UPDATE_BUTTON: 'スニペットを更新',
+        CANCEL_BUTTON: 'キャンセル',
+        ADD_BUTTON: 'スニペットを追加'
     }
 };
 
@@ -31,6 +35,7 @@ const CONSTANTS = {
 class PopupManager {
     constructor() {
         this.elements = {};
+        this.editingIndex = null; // 編集中のスニペットのインデックス
         this.init();
     }
 
@@ -69,12 +74,12 @@ class PopupManager {
      */
     setupEventListeners() {
         // 追加ボタンのクリックイベント
-        this.elements.addButton?.addEventListener('click', () => this.addSnippet());
+        this.elements.addButton?.addEventListener('click', () => this.handleAddOrUpdate());
         
         // Enterキーでの追加対応
         this.elements.textInput?.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && e.ctrlKey) {
-                this.addSnippet();
+                this.handleAddOrUpdate();
             }
         });
 
@@ -145,15 +150,144 @@ class PopupManager {
         text.textContent = snippet.title || CONSTANTS.MESSAGES.UNTITLED;
         text.title = snippet.text; // ツールチップ
 
+        // ボタンコンテナ
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'button-container';
+
+        // 編集ボタン
+        const editBtn = document.createElement('button');
+        editBtn.className = CONSTANTS.CLASSES.EDIT_BUTTON;
+        editBtn.textContent = '✏️';
+        editBtn.title = '編集';
+        editBtn.addEventListener('click', () => this.startEdit(snippet, index));
+
         // 削除ボタン
         const deleteBtn = document.createElement('button');
         deleteBtn.className = CONSTANTS.CLASSES.DELETE_BUTTON;
         deleteBtn.textContent = '×';
         deleteBtn.addEventListener('click', () => this.deleteSnippet(index));
 
+        buttonContainer.appendChild(editBtn);
+        buttonContainer.appendChild(deleteBtn);
+
         item.appendChild(text);
-        item.appendChild(deleteBtn);
+        item.appendChild(buttonContainer);
         this.elements.snippetsList.appendChild(item);
+    }
+
+    /**
+     * 編集モードを開始
+     * @param {Object} snippet - 編集するスニペット
+     * @param {number} index - スニペットのインデックス
+     */
+    startEdit(snippet, index) {
+        this.editingIndex = index;
+        
+        // フォームに既存の値を設定
+        if (this.elements.titleInput) this.elements.titleInput.value = snippet.title || '';
+        if (this.elements.textInput) this.elements.textInput.value = snippet.text || '';
+        
+        // ボタンのテキストを変更
+        if (this.elements.addButton) {
+            this.elements.addButton.textContent = CONSTANTS.MESSAGES.UPDATE_BUTTON;
+        }
+        
+        // キャンセルボタンを追加（存在しない場合）
+        this.addCancelButton();
+        
+        // タイトル入力フィールドにフォーカス
+        this.elements.titleInput?.focus();
+    }
+
+    /**
+     * キャンセルボタンを追加
+     */
+    addCancelButton() {
+        // 既存のキャンセルボタンがある場合は何もしない
+        if (document.getElementById('cancel-edit-btn')) return;
+        
+        const cancelBtn = document.createElement('button');
+        cancelBtn.id = 'cancel-edit-btn';
+        cancelBtn.className = 'button secondary';
+        cancelBtn.textContent = CONSTANTS.MESSAGES.CANCEL_BUTTON;
+        cancelBtn.addEventListener('click', () => this.cancelEdit());
+        
+        // 追加ボタンの後に挿入
+        this.elements.addButton?.parentNode?.insertBefore(cancelBtn, this.elements.addButton.nextSibling);
+    }
+
+    /**
+     * 編集をキャンセル
+     */
+    cancelEdit() {
+        this.editingIndex = null;
+        
+        // フォームをクリア
+        this.clearInputs();
+        
+        // ボタンのテキストを元に戻す
+        if (this.elements.addButton) {
+            this.elements.addButton.textContent = CONSTANTS.MESSAGES.ADD_BUTTON;
+        }
+        
+        // キャンセルボタンを削除
+        const cancelBtn = document.getElementById('cancel-edit-btn');
+        cancelBtn?.remove();
+    }
+
+    /**
+     * 追加または更新を処理
+     */
+    handleAddOrUpdate() {
+        if (this.editingIndex !== null) {
+            this.updateSnippet();
+        } else {
+            this.addSnippet();
+        }
+    }
+
+    /**
+     * スニペットを更新
+     */
+    updateSnippet() {
+        const text = this.elements.textInput?.value.trim();
+        const title = this.elements.titleInput?.value.trim();
+
+        if (!text) {
+            this.showTemporaryMessage('テキストを入力してください');
+            return;
+        }
+
+        chrome.storage.sync.get({ [CONSTANTS.STORAGE_KEY]: [] }, (data) => {
+            if (chrome.runtime.lastError) {
+                console.error('ストレージ読み込みエラー:', chrome.runtime.lastError);
+                this.showError('スニペットの更新に失敗しました');
+                return;
+            }
+
+            const snippets = [...data[CONSTANTS.STORAGE_KEY]];
+            
+            // 指定されたインデックスのスニペットを更新
+            if (this.editingIndex >= 0 && this.editingIndex < snippets.length) {
+                snippets[this.editingIndex] = {
+                    title: title || text.split('\n')[0] || CONSTANTS.MESSAGES.UNTITLED,
+                    text: text
+                };
+            }
+
+            chrome.storage.sync.set({ [CONSTANTS.STORAGE_KEY]: snippets }, () => {
+                if (chrome.runtime.lastError) {
+                    console.error('ストレージ保存エラー:', chrome.runtime.lastError);
+                    this.showError('スニペットの更新に失敗しました');
+                    return;
+                }
+
+                // 編集モードを終了
+                this.cancelEdit();
+                this.renderSnippets(snippets);
+                this.showTemporaryMessage('スニペットを更新しました', 'success');
+            });
+        });
     }
 
     /**
@@ -250,12 +384,25 @@ class PopupManager {
     showTemporaryMessage(message, type = 'info') {
         const messageEl = document.createElement('div');
         messageEl.textContent = message;
+        
+        let backgroundColor;
+        switch(type) {
+            case 'error':
+                backgroundColor = '#f44336';
+                break;
+            case 'success':
+                backgroundColor = '#4CAF50';
+                break;
+            default:
+                backgroundColor = '#2196F3';
+        }
+        
         messageEl.style.cssText = `
             position: fixed;
             top: 10px;
             right: 10px;
             padding: 10px;
-            background-color: ${type === 'error' ? '#f44336' : '#2196F3'};
+            background-color: ${backgroundColor};
             color: white;
             border-radius: 4px;
             z-index: 1000;

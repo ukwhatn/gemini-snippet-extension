@@ -55,6 +55,7 @@ hr {
   overflow: hidden;
   text-overflow: ellipsis; /* 長いテキストは省略記号で表示 */
   margin-right: 10px;
+  flex: 1; /* 残りのスペースを占有 */
 }
 
 /* テキストエリア（プロンプト入力用） */
@@ -78,6 +79,12 @@ textarea {
   font-size: 13px;
 }
 
+/* ボタンコンテナ */
+.button-container {
+  display: flex;
+  gap: 5px; /* ボタン間のスペース */
+}
+
 /* ボタンの基本スタイル */
 .button {
   padding: 8px 16px;
@@ -98,6 +105,43 @@ textarea {
 /* プライマリボタンのホバー効果 */
 .button.primary:hover {
   background-color: #2b7de9; /* より明るいブルー */
+}
+
+/* セカンダリボタン（キャンセルボタン） */
+.button.secondary {
+  background-color: #ffffff;
+  color: #5f6368;
+  border: 1px solid #dadce0;
+  width: 100%;
+  margin-top: 5px;
+}
+
+/* セカンダリボタンのホバー効果 */
+.button.secondary:hover {
+  background-color: #f8f9fa;
+  border-color: #5f6368;
+}
+
+/* 編集ボタン */
+.edit-btn {
+  background-color: #e6e6e6; /* 通常時はグレー */
+  color: #5f6368;
+  border: none;
+  border-radius: 50%; /* 円形ボタン */
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  flex-shrink: 0; /* 縮小を防ぐ */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 編集ボタンのホバー効果 */
+.edit-btn:hover {
+  background-color: #1a73e8; /* ホバー時は青色 */
+  color: white;
 }
 
 /* 削除ボタン */
