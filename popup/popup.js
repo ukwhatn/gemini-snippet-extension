@@ -157,14 +157,14 @@ class PopupManager {
         // 編集ボタン
         const editBtn = document.createElement('button');
         editBtn.className = CONSTANTS.CLASSES.EDIT_BUTTON;
-        editBtn.textContent = '✏️';
+        editBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>';
         editBtn.title = '編集';
         editBtn.addEventListener('click', () => this.startEdit(snippet, index));
 
         // 削除ボタン
         const deleteBtn = document.createElement('button');
         deleteBtn.className = CONSTANTS.CLASSES.DELETE_BUTTON;
-        deleteBtn.textContent = '×';
+        deleteBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
         deleteBtn.addEventListener('click', () => this.deleteSnippet(index));
 
         buttonContainer.appendChild(editBtn);
@@ -189,7 +189,7 @@ class PopupManager {
         
         // ボタンのテキストを変更
         if (this.elements.addButton) {
-            this.elements.addButton.textContent = CONSTANTS.MESSAGES.UPDATE_BUTTON;
+            this.elements.addButton.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 6px;"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>' + CONSTANTS.MESSAGES.UPDATE_BUTTON;
         }
         
         // キャンセルボタンを追加（存在しない場合）
@@ -209,11 +209,12 @@ class PopupManager {
         const cancelBtn = document.createElement('button');
         cancelBtn.id = 'cancel-edit-btn';
         cancelBtn.className = 'button secondary';
-        cancelBtn.textContent = CONSTANTS.MESSAGES.CANCEL_BUTTON;
+        cancelBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 6px;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>' + CONSTANTS.MESSAGES.CANCEL_BUTTON;
         cancelBtn.addEventListener('click', () => this.cancelEdit());
         
-        // 追加ボタンの後に挿入
-        this.elements.addButton?.parentNode?.insertBefore(cancelBtn, this.elements.addButton.nextSibling);
+        // アクションボタンコンテナ内の追加ボタンの前に挿入
+        const actionButtons = document.getElementById('action-buttons');
+        actionButtons?.insertBefore(cancelBtn, this.elements.addButton);
     }
 
     /**
@@ -227,7 +228,7 @@ class PopupManager {
         
         // ボタンのテキストを元に戻す
         if (this.elements.addButton) {
-            this.elements.addButton.textContent = CONSTANTS.MESSAGES.ADD_BUTTON;
+            this.elements.addButton.innerHTML = CONSTANTS.MESSAGES.ADD_BUTTON;
         }
         
         // キャンセルボタンを削除
@@ -336,6 +337,11 @@ class PopupManager {
      * @param {number} index - 削除するスニペットのインデックス
      */
     deleteSnippet(index) {
+        // 削除確認ダイアログを表示
+        if (!confirm(CONSTANTS.MESSAGES.DELETE_CONFIRM)) {
+            return; // キャンセルされた場合は何もしない
+        }
+
         chrome.storage.sync.get({ [CONSTANTS.STORAGE_KEY]: [] }, (data) => {
             if (chrome.runtime.lastError) {
                 console.error('ストレージ読み込みエラー:', chrome.runtime.lastError);
@@ -354,6 +360,7 @@ class PopupManager {
                 }
 
                 this.renderSnippets(updatedSnippets);
+                this.showTemporaryMessage('スニペットを削除しました', 'success');
             });
         });
     }

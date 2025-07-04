@@ -2,7 +2,11 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>プロンプトスニペット</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
@@ -15,7 +19,9 @@
     <h3>新しいスニペットを追加</h3>
     <input type="text" id="new-snippet-title" placeholder="スニペットのタイトルを入力..." class="title-input">
     <textarea id="new-snippet-text" placeholder="プロンプトのテキストを入力..." rows="6"></textarea>
-    <button id="add-snippet-btn" class="button primary">スニペットを追加</button>
+    <div id="action-buttons" class="action-buttons">
+      <button id="add-snippet-btn" class="button primary">スニペットを追加</button>
+    </div>
   </div>
   <script src="popup.js"></script>
 </body>

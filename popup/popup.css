@@ -1,39 +1,89 @@
 /**
  * Gemini Prompt Snippets - ポップアップスタイル
- * 拡張機能のポップアップウィンドウのスタイル定義
+ * モダンでクリーンなデザイン
  */
 
 /* ベーススタイル */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  width: 300px; /* ポップアップの幅を固定 */
-  background-color: #f8f9fa; /* Googleのライトグレー背景 */
-  color: #202124; /* ダークグレーのテキスト */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  width: 480px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  color: #2d3748;
+  line-height: 1.6;
+  font-size: 14px;
 }
 
 /* メインコンテナ */
 .container {
-  padding: 10px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  min-height: 100vh;
 }
 
 /* 見出しスタイル */
-h2, h3 {
-  color: #1a73e8; /* Googleブルー */
-  margin-top: 0;
+h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+h2::before {
+  content: '✨';
+  font-size: 24px;
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 12px;
+  margin-top: 4px;
 }
 
 /* 区切り線 */
 hr {
-    border: 0;
-    height: 1px;
-    background-color: #dadce0;
-    margin: 15px 0;
+  border: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+  margin: 24px 0;
 }
 
 /* スニペットリストコンテナ */
 #snippets-list {
-  max-height: 200px; /* 最大高さを制限してスクロール可能に */
+  max-height: 280px;
   overflow-y: auto;
+  margin-bottom: 8px;
+  padding-right: 4px;
+}
+
+/* スクロールバーのスタイル */
+#snippets-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+#snippets-list::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+#snippets-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+#snippets-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 /* 個別のスニペットアイテム */
@@ -41,129 +91,203 @@ hr {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px;
-  margin-bottom: 5px;
-  background-color: #fff;
-  border: 1px solid #dadce0;
-  border-radius: 4px;
-  font-size: 13px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.snippet-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-color: #e0e7ff;
 }
 
 /* スニペットテキスト */
 .snippet-text {
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* 長いテキストは省略記号で表示 */
-  margin-right: 10px;
-  flex: 1; /* 残りのスペースを占有 */
+  text-overflow: ellipsis;
+  margin-right: 12px;
+  flex: 1;
+  font-weight: 500;
+  color: #1a202c;
 }
 
-/* テキストエリア（プロンプト入力用） */
+/* 入力フィールドの共通スタイル */
+textarea,
+.title-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  background: #ffffff;
+}
+
+textarea:focus,
+.title-input:focus {
+  outline: none;
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
+}
+
+/* テキストエリア */
 textarea {
-  width: calc(100% - 16px); /* パディングを考慮した幅 */
-  padding: 8px;
-  border: 1px solid #dadce0;
-  border-radius: 4px;
-  resize: vertical; /* 縦方向のみリサイズ可能 */
-  margin-bottom: 10px;
-  font-size: 13px;
+  resize: vertical;
+  min-height: 120px;
+  margin-bottom: 16px;
+  line-height: 1.5;
 }
 
 /* タイトル入力フィールド */
 .title-input {
-  width: calc(100% - 16px); /* パディングを考慮した幅 */
-  padding: 8px;
-  border: 1px solid #dadce0;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  font-size: 13px;
-}
-
-/* ボタンコンテナ */
-.button-container {
-  display: flex;
-  gap: 5px; /* ボタン間のスペース */
+  margin-bottom: 12px;
 }
 
 /* ボタンの基本スタイル */
 .button {
-  padding: 8px 16px;
+  padding: 12px 24px;
   border: none;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 600;
   font-size: 14px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-/* プライマリボタン（追加ボタン） */
+/* プライマリボタン */
 .button.primary {
-  background-color: #1a73e8; /* Googleブルー */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   width: 100%;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
-/* プライマリボタンのホバー効果 */
+/* ボタン内のSVGアイコン */
+.button svg {
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
 .button.primary:hover {
-  background-color: #2b7de9; /* より明るいブルー */
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.button.primary:active {
+  transform: translateY(0);
+}
+
+/* 小さな操作ボタン */
+.edit-btn,
+.delete-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+.edit-btn {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.edit-btn:hover {
+  background: #818cf8;
+  color: white;
+  transform: scale(1.1);
+}
+
+.delete-btn {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.delete-btn:hover {
+  background: #f87171;
+  color: white;
+  transform: scale(1.1);
+}
+
+/* ローディング/空状態 */
+.loading {
+  text-align: center;
+  color: #94a3b8;
+  padding: 40px 20px;
+  font-style: italic;
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.snippet-item {
+  animation: fadeIn 0.3s ease;
+}
+
+/* フォーカス時のアウトライン */
+:focus-visible {
+  outline: 2px solid #818cf8;
+  outline-offset: 2px;
+}
+
+/* ホバーエフェクト用の追加スタイル */
+.button-container {
+  display: flex;
+  gap: 8px;
+}
+
+/* アクションボタンコンテナ（編集時のキャンセル・保存ボタン用） */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* 編集モード時のボタンレイアウト */
+.action-buttons .button {
+  flex: 1;
 }
 
 /* セカンダリボタン（キャンセルボタン） */
 .button.secondary {
-  background-color: #ffffff;
-  color: #5f6368;
-  border: 1px solid #dadce0;
+  background: #f1f5f9;
+  color: #64748b;
+  border: 2px solid #e2e8f0;
   width: 100%;
-  margin-top: 5px;
 }
 
-/* セカンダリボタンのホバー効果 */
 .button.secondary:hover {
-  background-color: #f8f9fa;
-  border-color: #5f6368;
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
 }
 
-/* 編集ボタン */
-.edit-btn {
-  background-color: #e6e6e6; /* 通常時はグレー */
-  color: #5f6368;
-  border: none;
-  border-radius: 50%; /* 円形ボタン */
-  cursor: pointer;
-  width: 24px;
-  height: 24px;
-  font-size: 12px;
-  flex-shrink: 0; /* 縮小を防ぐ */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* 編集ボタンのホバー効果 */
-.edit-btn:hover {
-  background-color: #1a73e8; /* ホバー時は青色 */
-  color: white;
-}
-
-/* 削除ボタン */
-.delete-btn {
-  background-color: #e6e6e6; /* 通常時はグレー */
-  color: #808080;
-  border: none;
-  border-radius: 50%; /* 円形ボタン */
-  cursor: pointer;
-  width: 24px;
-  height: 24px;
-  font-weight: bold;
-  flex-shrink: 0; /* 縮小を防ぐ */
-}
-
-/* 削除ボタンのホバー効果 */
-.delete-btn:hover {
-  background-color: #d63c2c; /* ホバー時は赤色 */
-  color: white;
-}
-
-/* ローディング/空状態のメッセージ */
-.loading {
-    color: #808080; /* グレーのテキスト */
+.button.secondary:active {
+  transform: translateY(0);
 }
