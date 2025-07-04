@@ -20,12 +20,7 @@
   
   <div class="container">
     <div class="snippets-section">
-      <div id="snippets-list" class="snippets-list">
-        <div class="loading-container">
-          <div class="loading-spinner"></div>
-          <p class="loading-text">読み込み中...</p>
-        </div>
-      </div>
+      <div id="snippets-list" class="snippets-list"></div>
     </div>
     
     <div class="add-section">
@@ -42,7 +37,7 @@
         <label for="new-snippet-text" class="input-label">プロンプトテキスト</label>
       </div>
       <div id="action-buttons" class="action-buttons">
-        <button id="add-snippet-btn" class="button primary elevation-2">
+        <button id="add-snippet-btn" class="button primary">
           <i class="fas fa-plus"></i>
           <span>追加</span>
         </button>
@@ -50,9 +45,8 @@
     </div>
   </div>
   
-  <!-- 削除確認ダイアログ -->
   <div id="delete-dialog" class="dialog-overlay" style="display: none;">
-    <div class="dialog elevation-24">
+    <div class="dialog">
       <div class="dialog-header">
         <i class="fas fa-trash-alt"></i>
         <h3 class="dialog-title">削除の確認</h3>

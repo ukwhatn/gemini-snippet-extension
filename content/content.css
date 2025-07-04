@@ -1,127 +1,63 @@
 /**
- * Gemini Prompt Snippets - Material Design Content Style
- * マテリアルデザインに準拠したスニペットチップ
+ * Gemini Prompt Snippets - Content Styles
  */
 
-/* Material Design Variables */
 :root {
-  --md-primary: #1976D2;
-  --md-primary-dark: #1565C0;
-  --md-primary-light: #42A5F5;
-  --md-on-primary: #FFFFFF;
-  --md-surface: #FFFFFF;
-  --md-background: #FAFAFA;
-  --md-text-primary: rgba(0, 0, 0, 0.87);
-  --md-text-secondary: rgba(0, 0, 0, 0.54);
-  
-  /* Elevation shadows */
-  --elevation-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  --elevation-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  --elevation-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  --primary-color: #1976D2;
+  --primary-hover: #1565C0;
+  --surface-color: #FFFFFF;
+  --text-color: rgba(0, 0, 0, 0.87);
+  --border-color: rgba(0, 0, 0, 0.12);
+  --shadow-light: 0 1px 3px rgba(0,0,0,0.12);
+  --shadow-medium: 0 3px 6px rgba(0,0,0,0.16);
 }
 
-/* スニペットボタンコンテナ */
 #gemini-snippet-container {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   padding: 12px 0;
-  animation: fadeInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUp 0.3s ease-out;
 }
 
-/* Material Design Chip Style */
 .snippet-button {
-  /* Chip基本スタイル */
   height: 32px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--md-surface);
-  color: var(--md-text-primary);
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  background-color: var(--surface-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 0 16px;
   font-family: 'Roboto', sans-serif;
   font-size: 14px;
-  font-weight: 400;
-  letter-spacing: 0.25px;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  
-  /* 影とトランジション */
-  box-shadow: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
-  /* テキストの省略表示 */
+  transition: all 0.2s ease;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 200px;
+  position: relative;
 }
 
-/* リップルエフェクト */
-.snippet-button::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background-color: rgba(25, 118, 210, 0.2);
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
-/* クリック時のリップル */
-.snippet-button:active::after {
-  animation: ripple 0.6s ease-out;
-}
-
-@keyframes ripple {
-  0% {
-    width: 0;
-    height: 0;
-    opacity: 1;
-  }
-  100% {
-    width: 200px;
-    height: 200px;
-    opacity: 0;
-  }
-}
-
-/* ホバー時のスタイル */
 .snippet-button:hover {
   background-color: rgba(25, 118, 210, 0.08);
-  border-color: var(--md-primary);
-  box-shadow: var(--elevation-1);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-light);
 }
 
-/* アクティブ時のスタイル */
 .snippet-button:active {
   background-color: rgba(25, 118, 210, 0.12);
+  transform: scale(0.98);
 }
 
-/* フォーカス時のスタイル */
 .snippet-button:focus-visible {
-  outline: 2px solid var(--md-primary);
+  outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
 
-/* 選択されたチップ（使用後） */
-.snippet-button.selected {
-  background-color: var(--md-primary);
-  color: var(--md-on-primary);
-  border-color: var(--md-primary);
-}
-
-.snippet-button.selected::before {
-  content: '✓';
-}
-
-/* アニメーション定義 */
+/* アニメーション */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -135,48 +71,28 @@
 
 /* モバイル対応 */
 @media (max-width: 600px) {
-  #gemini-snippet-container {
-    gap: 6px;
-    padding: 8px 0;
-  }
-  
   .snippet-button {
     height: 28px;
     font-size: 13px;
     padding: 0 12px;
-    max-width: 160px;
+    max-width: 150px;
   }
 }
 
 /* ダークモード対応 */
 @media (prefers-color-scheme: dark) {
   :root {
-    --md-primary: #90CAF9;
-    --md-primary-dark: #64B5F6;
-    --md-primary-light: #BBDEFB;
-    --md-on-primary: #000000;
-    --md-surface: #2C2C2C;
-    --md-background: #121212;
-    --md-text-primary: rgba(255, 255, 255, 0.87);
-    --md-text-secondary: rgba(255, 255, 255, 0.60);
-  }
-  
-  .snippet-button {
-    background-color: var(--md-surface);
-    color: var(--md-text-primary);
-    border-color: rgba(255, 255, 255, 0.12);
+    --primary-color: #90CAF9;
+    --surface-color: #2C2C2C;
+    --text-color: rgba(255, 255, 255, 0.87);
+    --border-color: rgba(255, 255, 255, 0.12);
   }
   
   .snippet-button:hover {
     background-color: rgba(144, 202, 249, 0.08);
-    border-color: var(--md-primary);
   }
   
   .snippet-button:active {
     background-color: rgba(144, 202, 249, 0.12);
-  }
-  
-  .snippet-button::after {
-    background-color: rgba(144, 202, 249, 0.2);
   }
 }
