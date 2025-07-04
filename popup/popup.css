@@ -1,7 +1,41 @@
 /**
- * Gemini Prompt Snippets - ポップアップスタイル
- * モダンでクリーンなデザイン
+ * Gemini Prompt Snippets - Material Design Style
+ * マテリアルデザインガイドラインに準拠したスタイル
  */
+
+/* Material Design カラーパレット */
+:root {
+  --md-primary: #1976D2;
+  --md-primary-dark: #1565C0;
+  --md-primary-light: #42A5F5;
+  --md-secondary: #FF4081;
+  --md-secondary-dark: #F50057;
+  --md-secondary-light: #FF80AB;
+  --md-background: #FAFAFA;
+  --md-surface: #FFFFFF;
+  --md-error: #F44336;
+  --md-on-primary: #FFFFFF;
+  --md-on-surface: #212121;
+  --md-on-background: #212121;
+  --md-text-primary: rgba(0, 0, 0, 0.87);
+  --md-text-secondary: rgba(0, 0, 0, 0.54);
+  --md-text-disabled: rgba(0, 0, 0, 0.38);
+  --md-divider: rgba(0, 0, 0, 0.12);
+  
+  /* Elevation shadows */
+  --elevation-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  --elevation-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  --elevation-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  --elevation-4: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  --elevation-24: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+}
 
 /* ベーススタイル */
 * {
@@ -11,234 +45,428 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Roboto', 'Noto Sans JP', sans-serif;
   width: 480px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  color: #2d3748;
-  line-height: 1.6;
+  background-color: var(--md-background);
+  color: var(--md-text-primary);
+  line-height: 1.5;
   font-size: 14px;
+  overflow-x: hidden;
 }
 
-/* メインコンテナ */
-.container {
-  padding: 24px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  min-height: 100vh;
+/* App Bar */
+.app-bar {
+  background-color: var(--md-primary);
+  color: var(--md-on-primary);
+  padding: var(--spacing-md);
+  box-shadow: var(--elevation-2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-/* 見出しスタイル */
-h2 {
+.app-title {
   font-size: 20px;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 20px;
+  font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--spacing-sm);
 }
 
-h2::before {
-  content: '✨';
+.app-title i {
   font-size: 24px;
 }
 
-h3 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2d3748;
-  margin-bottom: 12px;
-  margin-top: 4px;
+/* Container */
+.container {
+  padding: 0;
+  min-height: calc(100vh - 64px);
+  background-color: var(--md-background);
 }
 
-/* 区切り線 */
-hr {
-  border: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
-  margin: 24px 0;
-}
-
-/* スニペットリストコンテナ */
-#snippets-list {
-  max-height: 280px;
-  overflow-y: auto;
-  margin-bottom: 8px;
-  padding-right: 4px;
-}
-
-/* スクロールバーのスタイル */
-#snippets-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-#snippets-list::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 3px;
-}
-
-#snippets-list::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
-}
-
-#snippets-list::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* 個別のスニペットアイテム */
-.snippet-item {
+/* Sections */
+.snippets-section {
+  background-color: var(--md-surface);
+  min-height: 200px;
+  max-height: 320px;
+  overflow: hidden;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+}
+
+.add-section {
+  background-color: var(--md-surface);
+  padding: var(--spacing-lg);
+  margin-top: var(--spacing-sm);
+  box-shadow: var(--elevation-1);
+}
+
+.section-header {
+  display: flex;
   align-items: center;
-  padding: 12px 16px;
-  margin-bottom: 8px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
-  border: 1px solid transparent;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  color: var(--md-text-primary);
+}
+
+.section-header i {
+  color: var(--md-primary);
+  font-size: 20px;
+}
+
+.section-header h2 {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Snippets List */
+.snippets-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md);
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--md-text-secondary);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--md-divider);
+  border-top-color: var(--md-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  margin-top: var(--spacing-md);
+  font-size: 14px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Snippet Item - Card Style */
+.snippet-item {
+  background-color: var(--md-surface);
+  border-radius: 4px;
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  box-shadow: var(--elevation-1);
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
 .snippet-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  border-color: #e0e7ff;
+  box-shadow: var(--elevation-2);
 }
 
-/* スニペットテキスト */
+.snippet-item::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.snippet-item:active::before {
+  width: 300px;
+  height: 300px;
+}
+
 .snippet-text {
+  flex: 1;
+  font-size: 14px;
+  color: var(--md-text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-right: 12px;
-  flex: 1;
-  font-weight: 500;
-  color: #1a202c;
+  margin-right: var(--spacing-md);
 }
 
-/* 入力フィールドの共通スタイル */
-textarea,
-.title-input {
+/* Material Design Input Fields */
+.input-field {
+  position: relative;
+  margin-bottom: var(--spacing-lg);
+}
+
+.text-input {
   width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  font-size: 14px;
-  font-family: inherit;
-  transition: all 0.3s ease;
-  background: #ffffff;
-}
-
-textarea:focus,
-.title-input:focus {
-  outline: none;
-  border-color: #818cf8;
-  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
-}
-
-/* テキストエリア */
-textarea {
-  resize: vertical;
-  min-height: 120px;
-  margin-bottom: 16px;
-  line-height: 1.5;
-}
-
-/* タイトル入力フィールド */
-.title-input {
-  margin-bottom: 12px;
-}
-
-/* ボタンの基本スタイル */
-.button {
-  padding: 12px 24px;
+  padding: 20px 12px 6px;
   border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
+  border-bottom: 1px solid var(--md-divider);
+  background-color: transparent;
+  font-size: 16px;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  color: var(--md-text-primary);
+}
+
+.text-input:focus {
+  outline: none;
+  border-bottom-color: var(--md-primary);
+}
+
+.text-input.textarea {
+  resize: vertical;
+  min-height: 80px;
+  max-height: 200px;
+}
+
+/* Floating Label */
+.input-label {
+  position: absolute;
+  left: 12px;
+  top: 16px;
+  font-size: 16px;
+  color: var(--md-text-secondary);
+  pointer-events: none;
+  transition: all 0.2s;
+  background-color: var(--md-surface);
+  padding: 0 4px;
+}
+
+.text-input:focus ~ .input-label,
+.text-input:not(:placeholder-shown) ~ .input-label {
+  top: -8px;
+  font-size: 12px;
+  color: var(--md-primary);
+}
+
+/* Material Design Buttons */
+.button {
+  position: relative;
+  padding: 0 16px;
+  height: 36px;
+  border: none;
+  border-radius: 4px;
+  font-family: inherit;
   font-size: 14px;
-  transition: all 0.3s ease;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--spacing-sm);
 }
 
-/* プライマリボタン */
+/* Ripple Effect */
+.button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.button:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Button Types */
 .button.primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  width: 100%;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
-
-/* ボタン内のSVGアイコン */
-.button svg {
-  vertical-align: middle;
-  margin-right: 6px;
+  background-color: var(--md-primary);
+  color: var(--md-on-primary);
 }
 
 .button.primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  background-color: var(--md-primary-dark);
 }
 
 .button.primary:active {
-  transform: translateY(0);
+  background-color: var(--md-primary-dark);
 }
 
-/* 小さな操作ボタン */
+.button.text {
+  background-color: transparent;
+  color: var(--md-primary);
+  padding: 0 8px;
+}
+
+.button.text:hover {
+  background-color: rgba(25, 118, 210, 0.08);
+}
+
+.button.text::before {
+  background-color: rgba(25, 118, 210, 0.12);
+}
+
+/* Icon Buttons */
 .edit-btn,
 .delete-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   border: none;
+  background-color: transparent;
+  color: var(--md-text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-  margin-left: 4px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
 }
 
-.edit-btn {
-  background: #f1f5f9;
-  color: #64748b;
+.edit-btn:hover,
+.delete-btn:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.edit-btn:active,
+.delete-btn:active {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.edit-btn i,
+.delete-btn i {
+  font-size: 18px;
 }
 
 .edit-btn:hover {
-  background: #818cf8;
-  color: white;
-  transform: scale(1.1);
-}
-
-.delete-btn {
-  background: #f1f5f9;
-  color: #64748b;
+  color: var(--md-primary);
 }
 
 .delete-btn:hover {
-  background: #f87171;
-  color: white;
-  transform: scale(1.1);
+  color: var(--md-error);
 }
 
-/* ローディング/空状態 */
-.loading {
-  text-align: center;
-  color: #94a3b8;
-  padding: 40px 20px;
-  font-style: italic;
+/* Button Container */
+.button-container {
+  display: flex;
+  gap: var(--spacing-xs);
 }
 
-/* アニメーション */
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+}
+
+/* Elevation Classes */
+.elevation-1 {
+  box-shadow: var(--elevation-1);
+}
+
+.elevation-2 {
+  box-shadow: var(--elevation-2);
+}
+
+.elevation-3 {
+  box-shadow: var(--elevation-3);
+}
+
+.elevation-4 {
+  box-shadow: var(--elevation-4);
+}
+
+.elevation-24 {
+  box-shadow: var(--elevation-24);
+}
+
+/* Dialog */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s;
+}
+
+.dialog {
+  background-color: var(--md-surface);
+  border-radius: 4px;
+  padding: 0;
+  max-width: 320px;
+  width: 90%;
+  overflow: hidden;
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dialog-header {
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.dialog-header i {
+  font-size: 24px;
+  color: var(--md-error);
+}
+
+.dialog-title {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--md-text-primary);
+  margin: 0;
+}
+
+.dialog-message {
+  padding: 0 var(--spacing-lg) var(--spacing-lg);
+  color: var(--md-text-secondary);
+  line-height: 1.5;
+}
+
+.dialog-actions {
+  padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) var(--spacing-lg);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+}
+
+/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -246,48 +474,61 @@ textarea {
   }
 }
 
-.snippet-item {
-  animation: fadeIn 0.3s ease;
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-/* フォーカス時のアウトライン */
+::-webkit-scrollbar-track {
+  background-color: var(--md-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--md-divider);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Focus States */
 :focus-visible {
-  outline: 2px solid #818cf8;
+  outline: 2px solid var(--md-primary);
   outline-offset: 2px;
 }
 
-/* ホバーエフェクト用の追加スタイル */
-.button-container {
-  display: flex;
-  gap: 8px;
+/* Empty State */
+.loading {
+  text-align: center;
+  color: var(--md-text-secondary);
+  padding: var(--spacing-xl);
+  font-size: 14px;
 }
 
-/* アクションボタンコンテナ（編集時のキャンセル・保存ボタン用） */
-.action-buttons {
-  display: flex;
-  gap: 8px;
-  margin-top: 16px;
+/* Toast Message */
+.toast {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #323232;
+  color: white;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: 4px;
+  font-size: 14px;
+  box-shadow: var(--elevation-3);
+  z-index: 1001;
+  animation: slideInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 編集モード時のボタンレイアウト */
-.action-buttons .button {
-  flex: 1;
-}
-
-/* セカンダリボタン（キャンセルボタン） */
-.button.secondary {
-  background: #f1f5f9;
-  color: #64748b;
-  border: 2px solid #e2e8f0;
-  width: 100%;
-}
-
-.button.secondary:hover {
-  background: #e2e8f0;
-  border-color: #cbd5e1;
-  transform: translateY(-1px);
-}
-
-.button.secondary:active {
-  transform: translateY(0);
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 100%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }

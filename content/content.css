@@ -1,127 +1,182 @@
 /**
- * Gemini Prompt Snippets - コンテンツスタイル
- * Geminiのチャット画面に挿入されるモダンなスニペットボタン
+ * Gemini Prompt Snippets - Material Design Content Style
+ * マテリアルデザインに準拠したスニペットチップ
  */
+
+/* Material Design Variables */
+:root {
+  --md-primary: #1976D2;
+  --md-primary-dark: #1565C0;
+  --md-primary-light: #42A5F5;
+  --md-on-primary: #FFFFFF;
+  --md-surface: #FFFFFF;
+  --md-background: #FAFAFA;
+  --md-text-primary: rgba(0, 0, 0, 0.87);
+  --md-text-secondary: rgba(0, 0, 0, 0.54);
+  
+  /* Elevation shadows */
+  --elevation-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  --elevation-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  --elevation-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
 
 /* スニペットボタンコンテナ */
 #gemini-snippet-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    padding: 1rem 0;
-    animation: fadeIn 0.5s ease-out;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 0;
+  animation: fadeInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* モバイル対応 */
-@media (max-width: 600px) {
-    #gemini-snippet-container {
-        gap: 0.5rem;
-        padding: 0.75rem 0;
-    }
-}
-
-/* スニペットボタンのスタイル */
+/* Material Design Chip Style */
 .snippet-button {
-    /* 基本スタイル */
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #ffffff;
-    border: none;
-    border-radius: 24px;
-    padding: 0.625rem 1.25rem;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    
-    /* シャドウとトランジション */
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    
-    /* テキストの省略表示 */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 280px;
-    
-    /* アニメーション用の疑似要素 */
-    position: relative;
+  /* Chip基本スタイル */
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--md-surface);
+  color: var(--md-text-primary);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 16px;
+  padding: 0 16px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.25px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  
+  /* 影とトランジション */
+  box-shadow: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* テキストの省略表示 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
 }
 
-/* ホバーエフェクト用の疑似要素 */
-.snippet-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateX(-100%);
-    transition: transform 0.5s ease;
+/* リップルエフェクト */
+.snippet-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background-color: rgba(25, 118, 210, 0.2);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* クリック時のリップル */
+.snippet-button:active::after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    width: 200px;
+    height: 200px;
+    opacity: 0;
+  }
 }
 
 /* ホバー時のスタイル */
 .snippet-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
-}
-
-.snippet-button:hover::before {
-    transform: translateX(0);
+  background-color: rgba(25, 118, 210, 0.08);
+  border-color: var(--md-primary);
+  box-shadow: var(--elevation-1);
 }
 
 /* アクティブ時のスタイル */
 .snippet-button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.25);
+  background-color: rgba(25, 118, 210, 0.12);
 }
 
 /* フォーカス時のスタイル */
 .snippet-button:focus-visible {
-    outline: 3px solid rgba(102, 126, 234, 0.5);
-    outline-offset: 2px;
+  outline: 2px solid var(--md-primary);
+  outline-offset: 2px;
+}
+
+/* 選択されたチップ（使用後） */
+.snippet-button.selected {
+  background-color: var(--md-primary);
+  color: var(--md-on-primary);
+  border-color: var(--md-primary);
+}
+
+.snippet-button.selected::before {
+  content: '✓';
 }
 
 /* アニメーション定義 */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* 波紋エフェクト */
-.snippet-button::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
-    transform: translate(-50%, -50%);
+@keyframes fadeInUp {
+  from {
     opacity: 0;
-    pointer-events: none;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.snippet-button:active::after {
-    width: 200%;
-    height: 200%;
-    opacity: 0;
-    transition: width 0.5s, height 0.5s, opacity 0.5s;
+/* モバイル対応 */
+@media (max-width: 600px) {
+  #gemini-snippet-container {
+    gap: 6px;
+    padding: 8px 0;
+  }
+  
+  .snippet-button {
+    height: 28px;
+    font-size: 13px;
+    padding: 0 12px;
+    max-width: 160px;
+  }
 }
 
-/* ダークモード対応（Geminiがダークモードの場合） */
+/* ダークモード対応 */
 @media (prefers-color-scheme: dark) {
-    .snippet-button {
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-    }
-    
-    .snippet-button:hover {
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-    }
+  :root {
+    --md-primary: #90CAF9;
+    --md-primary-dark: #64B5F6;
+    --md-primary-light: #BBDEFB;
+    --md-on-primary: #000000;
+    --md-surface: #2C2C2C;
+    --md-background: #121212;
+    --md-text-primary: rgba(255, 255, 255, 0.87);
+    --md-text-secondary: rgba(255, 255, 255, 0.60);
+  }
+  
+  .snippet-button {
+    background-color: var(--md-surface);
+    color: var(--md-text-primary);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+  
+  .snippet-button:hover {
+    background-color: rgba(144, 202, 249, 0.08);
+    border-color: var(--md-primary);
+  }
+  
+  .snippet-button:active {
+    background-color: rgba(144, 202, 249, 0.12);
+  }
+  
+  .snippet-button::after {
+    background-color: rgba(144, 202, 249, 0.2);
+  }
 }

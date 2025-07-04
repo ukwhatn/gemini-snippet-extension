@@ -1,6 +1,6 @@
 /**
- * Gemini Prompt Snippets - ポップアップスクリプト
- * スニペットの管理画面を提供（追加・削除・表示）
+ * Gemini Prompt Snippets - Material Design Version
+ * Font Awesomeアイコンとマテリアルデザインインタラクション
  */
 
 // 定数定義
@@ -17,15 +17,15 @@ const CONSTANTS = {
         SNIPPET_TEXT: 'snippet-text',
         DELETE_BUTTON: 'delete-btn',
         EDIT_BUTTON: 'edit-btn',
-        LOADING: 'loading'
+        LOADING: 'loading-container'
     },
     MESSAGES: {
-        NO_SNIPPETS: 'スニペットはまだありません。',
+        NO_SNIPPETS: 'スニペットはまだありません',
         UNTITLED: '無題',
         DELETE_CONFIRM: '削除してもよろしいですか？',
-        UPDATE_BUTTON: 'スニペットを更新',
+        UPDATE_BUTTON: '更新',
         CANCEL_BUTTON: 'キャンセル',
-        ADD_BUTTON: 'スニペットを追加'
+        ADD_BUTTON: '追加'
     }
 };
 
@@ -35,7 +35,7 @@ const CONSTANTS = {
 class PopupManager {
     constructor() {
         this.elements = {};
-        this.editingIndex = null; // 編集中のスニペットのインデックス
+        this.editingIndex = null;
         this.init();
     }
 
@@ -47,6 +47,7 @@ class PopupManager {
             this.cacheElements();
             this.setupEventListeners();
             this.loadSnippets();
+            this.setupRippleEffect();
         });
     }
 
@@ -67,6 +68,47 @@ class PopupManager {
                 console.error(`必須要素が見つかりません: ${key}`);
             }
         });
+    }
+
+    /**
+     * リップルエフェクトの設定
+     */
+    setupRippleEffect() {
+        document.addEventListener('click', (e) => {
+            const button = e.target.closest('.button, .snippet-item');
+            if (button && !button.classList.contains('text')) {
+                this.createRipple(e, button);
+            }
+        });
+    }
+
+    /**
+     * リップルエフェクトを作成
+     */
+    createRipple(event, element) {
+        const ripple = document.createElement('span');
+        const rect = element.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = event.clientX - rect.left - size / 2;
+        const y = event.clientY - rect.top - size / 2;
+
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = x + 'px';
+        ripple.style.top = y + 'px';
+        ripple.className = 'ripple';
+        
+        // 既存のリップルを削除
+        const existingRipple = element.querySelector('.ripple');
+        if (existingRipple) {
+            existingRipple.remove();
+        }
+
+        element.appendChild(ripple);
+
+        // アニメーション後に削除
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
     }
 
     /**
@@ -98,7 +140,7 @@ class PopupManager {
         chrome.storage.sync.get({ [CONSTANTS.STORAGE_KEY]: [] }, (data) => {
             if (chrome.runtime.lastError) {
                 console.error('ストレージ読み込みエラー:', chrome.runtime.lastError);
-                this.showError('スニペットの読み込みに失敗しました');
+                this.showToast('スニペットの読み込みに失敗しました', 'error');
                 return;
             }
             
@@ -130,7 +172,7 @@ class PopupManager {
      */
     showEmptyMessage() {
         const message = document.createElement('p');
-        message.className = CONSTANTS.CLASSES.LOADING;
+        message.className = 'loading';
         message.textContent = CONSTANTS.MESSAGES.NO_SNIPPETS;
         this.elements.snippetsList.appendChild(message);
     }
@@ -157,15 +199,22 @@ class PopupManager {
         // 編集ボタン
         const editBtn = document.createElement('button');
         editBtn.className = CONSTANTS.CLASSES.EDIT_BUTTON;
-        editBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>';
+        editBtn.innerHTML = '<i class="fas fa-edit"></i>';
         editBtn.title = '編集';
-        editBtn.addEventListener('click', () => this.startEdit(snippet, index));
+        editBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.startEdit(snippet, index);
+        });
 
         // 削除ボタン
         const deleteBtn = document.createElement('button');
         deleteBtn.className = CONSTANTS.CLASSES.DELETE_BUTTON;
-        deleteBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
-        deleteBtn.addEventListener('click', () => this.deleteSnippet(index));
+        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteBtn.title = '削除';
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.deleteSnippet(index);
+        });
 
         buttonContainer.appendChild(editBtn);
         buttonContainer.appendChild(deleteBtn);
@@ -189,14 +238,31 @@ class PopupManager {
         
         // ボタンのテキストを変更
         if (this.elements.addButton) {
-            this.elements.addButton.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 6px;"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>' + CONSTANTS.MESSAGES.UPDATE_BUTTON;
+            this.elements.addButton.innerHTML = '<i class="fas fa-save"></i><span>' + CONSTANTS.MESSAGES.UPDATE_BUTTON + '</span>';
         }
         
-        // キャンセルボタンを追加（存在しない場合）
+        // キャンセルボタンを追加
         this.addCancelButton();
         
         // タイトル入力フィールドにフォーカス
         this.elements.titleInput?.focus();
+        
+        // フローティングラベルの状態を更新
+        this.updateFloatingLabels();
+    }
+
+    /**
+     * フローティングラベルの状態を更新
+     */
+    updateFloatingLabels() {
+        const inputs = document.querySelectorAll('.text-input');
+        inputs.forEach(input => {
+            if (input.value) {
+                input.classList.add('has-value');
+            } else {
+                input.classList.remove('has-value');
+            }
+        });
     }
 
     /**
@@ -208,8 +274,8 @@ class PopupManager {
         
         const cancelBtn = document.createElement('button');
         cancelBtn.id = 'cancel-edit-btn';
-        cancelBtn.className = 'button secondary';
-        cancelBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 6px;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>' + CONSTANTS.MESSAGES.CANCEL_BUTTON;
+        cancelBtn.className = 'button text';
+        cancelBtn.innerHTML = CONSTANTS.MESSAGES.CANCEL_BUTTON;
         cancelBtn.addEventListener('click', () => this.cancelEdit());
         
         // アクションボタンコンテナ内の追加ボタンの前に挿入
@@ -228,7 +294,7 @@ class PopupManager {
         
         // ボタンのテキストを元に戻す
         if (this.elements.addButton) {
-            this.elements.addButton.innerHTML = CONSTANTS.MESSAGES.ADD_BUTTON;
+            this.elements.addButton.innerHTML = '<i class="fas fa-plus"></i><span>' + CONSTANTS.MESSAGES.ADD_BUTTON + '</span>';
         }
         
         // キャンセルボタンを削除
@@ -255,14 +321,14 @@ class PopupManager {
         const title = this.elements.titleInput?.value.trim();
 
         if (!text) {
-            this.showTemporaryMessage('テキストを入力してください');
+            this.showToast('テキストを入力してください', 'error');
             return;
         }
 
         chrome.storage.sync.get({ [CONSTANTS.STORAGE_KEY]: [] }, (data) => {
             if (chrome.runtime.lastError) {
                 console.error('ストレージ読み込みエラー:', chrome.runtime.lastError);
-                this.showError('スニペットの更新に失敗しました');
+                this.showToast('スニペットの更新に失敗しました', 'error');
                 return;
             }
 
@@ -279,14 +345,14 @@ class PopupManager {
             chrome.storage.sync.set({ [CONSTANTS.STORAGE_KEY]: snippets }, () => {
                 if (chrome.runtime.lastError) {
                     console.error('ストレージ保存エラー:', chrome.runtime.lastError);
-                    this.showError('スニペットの更新に失敗しました');
+                    this.showToast('スニペットの更新に失敗しました', 'error');
                     return;
                 }
 
                 // 編集モードを終了
                 this.cancelEdit();
                 this.renderSnippets(snippets);
-                this.showTemporaryMessage('スニペットを更新しました', 'success');
+                this.showToast('スニペットを更新しました', 'success');
             });
         });
     }
@@ -299,14 +365,14 @@ class PopupManager {
         const title = this.elements.titleInput?.value.trim();
 
         if (!text) {
-            this.showTemporaryMessage('テキストを入力してください');
+            this.showToast('テキストを入力してください', 'error');
             return;
         }
 
         chrome.storage.sync.get({ [CONSTANTS.STORAGE_KEY]: [] }, (data) => {
             if (chrome.runtime.lastError) {
                 console.error('ストレージ読み込みエラー:', chrome.runtime.lastError);
-                this.showError('スニペットの追加に失敗しました');
+                this.showToast('スニペットの追加に失敗しました', 'error');
                 return;
             }
 
@@ -321,13 +387,14 @@ class PopupManager {
             chrome.storage.sync.set({ [CONSTANTS.STORAGE_KEY]: updatedSnippets }, () => {
                 if (chrome.runtime.lastError) {
                     console.error('ストレージ保存エラー:', chrome.runtime.lastError);
-                    this.showError('スニペットの保存に失敗しました');
+                    this.showToast('スニペットの保存に失敗しました', 'error');
                     return;
                 }
 
                 // 入力フィールドをクリア
                 this.clearInputs();
                 this.renderSnippets(updatedSnippets);
+                this.showToast('スニペットを追加しました', 'success');
             });
         });
     }
@@ -337,32 +404,80 @@ class PopupManager {
      * @param {number} index - 削除するスニペットのインデックス
      */
     deleteSnippet(index) {
-        // 削除確認ダイアログを表示
-        if (!confirm(CONSTANTS.MESSAGES.DELETE_CONFIRM)) {
-            return; // キャンセルされた場合は何もしない
-        }
-
-        chrome.storage.sync.get({ [CONSTANTS.STORAGE_KEY]: [] }, (data) => {
-            if (chrome.runtime.lastError) {
-                console.error('ストレージ読み込みエラー:', chrome.runtime.lastError);
-                this.showError('スニペットの削除に失敗しました');
+        // カスタム削除確認ダイアログを表示
+        this.showDeleteConfirmDialog((confirmed) => {
+            if (!confirmed) {
                 return;
             }
 
-            const snippets = data[CONSTANTS.STORAGE_KEY];
-            const updatedSnippets = snippets.filter((_, i) => i !== index);
-
-            chrome.storage.sync.set({ [CONSTANTS.STORAGE_KEY]: updatedSnippets }, () => {
+            chrome.storage.sync.get({ [CONSTANTS.STORAGE_KEY]: [] }, (data) => {
                 if (chrome.runtime.lastError) {
-                    console.error('ストレージ保存エラー:', chrome.runtime.lastError);
-                    this.showError('スニペットの削除に失敗しました');
+                    console.error('ストレージ読み込みエラー:', chrome.runtime.lastError);
+                    this.showToast('スニペットの削除に失敗しました', 'error');
                     return;
                 }
 
-                this.renderSnippets(updatedSnippets);
-                this.showTemporaryMessage('スニペットを削除しました', 'success');
+                const snippets = data[CONSTANTS.STORAGE_KEY];
+                const updatedSnippets = snippets.filter((_, i) => i !== index);
+
+                chrome.storage.sync.set({ [CONSTANTS.STORAGE_KEY]: updatedSnippets }, () => {
+                    if (chrome.runtime.lastError) {
+                        console.error('ストレージ保存エラー:', chrome.runtime.lastError);
+                        this.showToast('スニペットの削除に失敗しました', 'error');
+                        return;
+                    }
+
+                    this.renderSnippets(updatedSnippets);
+                    this.showToast('スニペットを削除しました', 'success');
+                });
             });
         });
+    }
+
+    /**
+     * 削除確認ダイアログを表示
+     * @param {Function} callback - 確認結果を受け取るコールバック関数
+     */
+    showDeleteConfirmDialog(callback) {
+        const dialog = document.getElementById('delete-dialog');
+        const confirmBtn = document.getElementById('dialog-confirm');
+        const cancelBtn = document.getElementById('dialog-cancel');
+
+        // ダイアログを表示
+        dialog.style.display = 'flex';
+
+        // 確認ボタンのイベントハンドラ
+        const handleConfirm = () => {
+            dialog.style.display = 'none';
+            removeEventListeners();
+            callback(true);
+        };
+
+        // キャンセルボタンのイベントハンドラ
+        const handleCancel = () => {
+            dialog.style.display = 'none';
+            removeEventListeners();
+            callback(false);
+        };
+
+        // イベントリスナーを削除する関数
+        const removeEventListeners = () => {
+            confirmBtn.removeEventListener('click', handleConfirm);
+            cancelBtn.removeEventListener('click', handleCancel);
+            dialog.removeEventListener('click', handleOverlayClick);
+        };
+
+        // オーバーレイクリックでキャンセル
+        const handleOverlayClick = (e) => {
+            if (e.target === dialog) {
+                handleCancel();
+            }
+        };
+
+        // イベントリスナーを追加
+        confirmBtn.addEventListener('click', handleConfirm);
+        cancelBtn.addEventListener('click', handleCancel);
+        dialog.addEventListener('click', handleOverlayClick);
     }
 
     /**
@@ -371,57 +486,77 @@ class PopupManager {
     clearInputs() {
         if (this.elements.textInput) this.elements.textInput.value = '';
         if (this.elements.titleInput) this.elements.titleInput.value = '';
+        this.updateFloatingLabels();
         this.elements.titleInput?.focus();
     }
 
     /**
-     * エラーメッセージを表示
-     * @param {string} message - エラーメッセージ
-     */
-    showError(message) {
-        console.error(message);
-        this.showTemporaryMessage(message, 'error');
-    }
-
-    /**
-     * 一時的なメッセージを表示
+     * マテリアルデザインのトーストメッセージを表示
      * @param {string} message - メッセージ
-     * @param {string} type - メッセージタイプ
+     * @param {string} type - メッセージタイプ (success, error, info)
      */
-    showTemporaryMessage(message, type = 'info') {
-        const messageEl = document.createElement('div');
-        messageEl.textContent = message;
+    showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
         
-        let backgroundColor;
+        // タイプに応じてアイコンを追加
+        let icon = '';
         switch(type) {
-            case 'error':
-                backgroundColor = '#f44336';
-                break;
             case 'success':
-                backgroundColor = '#4CAF50';
+                icon = '<i class="fas fa-check-circle" style="margin-right: 8px;"></i>';
+                break;
+            case 'error':
+                icon = '<i class="fas fa-exclamation-circle" style="margin-right: 8px;"></i>';
                 break;
             default:
-                backgroundColor = '#2196F3';
+                icon = '<i class="fas fa-info-circle" style="margin-right: 8px;"></i>';
         }
         
-        messageEl.style.cssText = `
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            padding: 10px;
-            background-color: ${backgroundColor};
-            color: white;
-            border-radius: 4px;
-            z-index: 1000;
-        `;
+        toast.innerHTML = icon + message;
+        document.body.appendChild(toast);
         
-        document.body.appendChild(messageEl);
-        
+        // アニメーション後に削除
         setTimeout(() => {
-            messageEl.remove();
+            toast.style.animation = 'slideOutDown 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
         }, 3000);
     }
 }
+
+// リップルエフェクト用のスタイルを追加
+const style = document.createElement('style');
+style.textContent = `
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.3);
+        transform: scale(0);
+        animation: ripple 0.6s linear;
+        pointer-events: none;
+    }
+    
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+    
+    @keyframes slideOutDown {
+        from {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+        to {
+            opacity: 0;
+            transform: translate(-50%, 100%);
+        }
+    }
+`;
+document.head.appendChild(style);
 
 // ポップアップマネージャーのインスタンスを作成
 const popupManager = new PopupManager();

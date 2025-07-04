@@ -6,23 +6,65 @@
   <title>プロンプトスニペット</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
+  <div class="app-bar">
+    <h1 class="app-title">
+      <i class="fas fa-robot"></i>
+      <span>プロンプトスニペット</span>
+    </h1>
+  </div>
+  
   <div class="container">
-    <h2>プロンプトスニペット</h2>
-    <div id="snippets-list">
-      <p class="loading">読み込み中...</p>
+    <div class="snippets-section">
+      <div id="snippets-list" class="snippets-list">
+        <div class="loading-container">
+          <div class="loading-spinner"></div>
+          <p class="loading-text">読み込み中...</p>
+        </div>
+      </div>
     </div>
-    <hr>
-    <h3>新しいスニペットを追加</h3>
-    <input type="text" id="new-snippet-title" placeholder="スニペットのタイトルを入力..." class="title-input">
-    <textarea id="new-snippet-text" placeholder="プロンプトのテキストを入力..." rows="6"></textarea>
-    <div id="action-buttons" class="action-buttons">
-      <button id="add-snippet-btn" class="button primary">スニペットを追加</button>
+    
+    <div class="add-section">
+      <div class="section-header">
+        <i class="fas fa-plus-circle"></i>
+        <h2>新しいスニペット</h2>
+      </div>
+      <div class="input-field">
+        <input type="text" id="new-snippet-title" class="text-input" placeholder=" ">
+        <label for="new-snippet-title" class="input-label">タイトル</label>
+      </div>
+      <div class="input-field">
+        <textarea id="new-snippet-text" class="text-input textarea" placeholder=" " rows="4"></textarea>
+        <label for="new-snippet-text" class="input-label">プロンプトテキスト</label>
+      </div>
+      <div id="action-buttons" class="action-buttons">
+        <button id="add-snippet-btn" class="button primary elevation-2">
+          <i class="fas fa-plus"></i>
+          <span>追加</span>
+        </button>
+      </div>
     </div>
   </div>
+  
+  <!-- 削除確認ダイアログ -->
+  <div id="delete-dialog" class="dialog-overlay" style="display: none;">
+    <div class="dialog elevation-24">
+      <div class="dialog-header">
+        <i class="fas fa-trash-alt"></i>
+        <h3 class="dialog-title">削除の確認</h3>
+      </div>
+      <p class="dialog-message">このスニペットを削除してもよろしいですか？</p>
+      <div class="dialog-actions">
+        <button id="dialog-cancel" class="button text">キャンセル</button>
+        <button id="dialog-confirm" class="button primary">削除</button>
+      </div>
+    </div>
+  </div>
+  
   <script src="popup.js"></script>
 </body>
 </html>
