@@ -26,6 +26,8 @@ git:
 		$(MAKE) git-push; \
 	elif [ "$(SUBCOMMAND)" = "commit wip" ]; then \
 		$(MAKE) git-commit-wip; \
+	elif [ "$(SUBCOMMAND)" = "diff copy" ]; then \
+		$(MAKE) git-diff-copy; \
 	elif [ "$(SUBCOMMAND)" = "help" ] || [ "$(SUBCOMMAND)" = "-h" ] || [ -z "$(SUBCOMMAND)" ]; then \
 		$(MAKE) git-help; \
 	else \
@@ -46,6 +48,12 @@ git-commit-wip:
 	@echo "🚀 Creating WIP commit..."
 	@git add .
 	@git commit -m "WIP"
+	@echo "✅ Done!"
+
+.PHONY: git-diff-copy
+git-diff-copy:
+	@echo "🚀 Copying diff to clipboard..."
+	@git diff | pbcopy
 	@echo "✅ Done!"
 
 .PHONY: git-help
